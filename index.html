@@ -103,17 +103,20 @@
 <div class="wrap">
   <div class="header">
     <h1>Lead Scorer</h1>
-    <p>Paste a company URL &mdash; AI researches it, scores it, and lets you edit every field live.</p>
+    <p>Paste a company URL — AI researches it, scores it, and lets you edit every field live.</p>
   </div>
 
-  <div class="api-key-corner">   <label>Anthropic API Key</label>   <input type="password" id="api-key-input" placeholder="sk-ant-..." /> </div>
+  <div class="api-key-corner">
+    <label>Anthropic API Key</label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+  </div>
 
   <div class="url-row">
     <input type="text" id="url-input" placeholder="https://company.com" />
     <button id="score-btn" onclick="scoreCompany()">Score</button>
   </div>
 
-  <div class="status" id="status">&#x1F50D; Researching company&hellip;</div>
+  <div class="status" id="status">🔍 Researching company…</div>
   <div class="error-box" id="error-box"></div>
 
   <div class="card" id="result-card">
@@ -124,18 +127,18 @@
       </div>
       <div class="top-info">
         <div class="name-row">
-          <span class="company-name" id="company-name">&mdash;</span>
+          <span class="company-name" id="company-name">—</span>
           <a class="li-pill" id="li-pill" href="#" target="_blank">
             <svg viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
             LinkedIn
           </a>
         </div>
-        <div class="company-meta" id="company-meta">&mdash;</div>
+        <div class="company-meta" id="company-meta">—</div>
         <div class="bar-row">
           <div class="bar-bg"><div class="bar-fill" id="bar-fill"></div></div>
           <div class="bar-label" id="bar-label">0 / 38 pts</div>
         </div>
-        <div class="grade-desc" id="grade-desc">&mdash;</div>
+        <div class="grade-desc" id="grade-desc">—</div>
       </div>
     </div>
     <div class="warning-box" id="warning-box"></div>
@@ -145,7 +148,7 @@
         <div id="details-rows"></div>
       </div>
       <div class="scoring-col">
-        <div class="col-label">Score breakdown &mdash; all fields editable</div>
+        <div class="col-label">Score breakdown — all fields editable</div>
         <div class="criteria-list" id="criteria-list"></div>
       </div>
     </div>
@@ -158,10 +161,228 @@
 <script>
 const GRADE_COLORS = { A:"#2d6e0f", B:"#0d4a82", C:"#7a4a00", D:"#7a2e0a", E:"#7a1010", F:"#555" };
 const GRADE_DESCS = {
-  A: "Top priority lead &mdash; pursue immediately",
-  B: "Strong lead &mdash; worth focused outreach",
-  C: "Moderate fit &mdash; qualify further",
-  D: "Low priority &mdash; only if pipeline is slow",
-  E: "Weak fit &mdash; deprioritize",
+  A: "Top priority lead — pursue immediately",
+  B: "Strong lead — worth focused outreach",
+  C: "Moderate fit — qualify further",
+  D: "Low priority — only if pipeline is slow",
+  E: "Weak fit — deprioritize",
   F: "Do not pursue"
 };
+const CRITERIA = [
+  { key: "company_location", label: "Company location", max: 5, options: [
+    { label: "USA, Canada, Israel, UK, DACH, Nordic, France, Switzerland, Australia", score: 5 },
+    { label: "East Europe, Baltics, Middle East", score: 3 },
+    { label: "Africa, South East Asia", score: 1 },
+    { label: "India, others", score: 0 }
+  ]},
+  { key: "lead_location", label: "Lead location", max: 2, options: [
+    { label: "USA, Canada, Israel, UK, DACH, Nordic, France, Switzerland, Australia", score: 2 },
+    { label: "East Europe, Baltics, Middle East", score: 1 },
+    { label: "Africa, South East Asia, India, others", score: 0 }
+  ]},
+  { key: "company_size", label: "Company size", max: 5, options: [
+    { label: "1000+", score: 5 }, { label: "500+", score: 4 }, { label: "101-500", score: 3 },
+    { label: "10-100", score: 1 }, { label: "1-9", score: 0 }
+  ]},
+  { key: "contact_role", label: "Contact role", max: 4, options: [
+    { label: "Owner, C-level (tech and non-tech)", score: 4 },
+    { label: "Directors, Head of (tech and non tech)", score: 3 },
+    { label: "Manager (tech)", score: 2 },
+    { label: "HR, Recruiters, non tech managers, juniors", score: 1 }
+  ]},
+  { key: "company_type", label: "Company type", max: 5, options: [
+    { label: "End business — mid and big enterprise", score: 5 },
+    { label: "End business — mature startup, middle size", score: 3 },
+    { label: "End business — small company or solopreneur", score: 2 },
+    { label: "IT company — subcontract big (500+ people)", score: 3 },
+    { label: "IT company — subcontract small (100-500)", score: 2 },
+    { label: "Vendor selection platform", score: 1 }
+  ]},
+  { key: "revenue", label: "Company revenue", max: 5, options: [
+    { label: "500M+", score: 5 }, { label: "100M+", score: 4 }, { label: "50M-100M", score: 3 },
+    { label: "10-50M", score: 2 }, { label: "1M-10M", score: 1 }, { label: "No data", score: 0 }
+  ]},
+  { key: "funding", label: "Company funding", max: 6, options: [
+    { label: "Mature, no need of funding", score: 6 }, { label: "50M+", score: 5 },
+    { label: "20M-50M", score: 4 }, { label: "10M-20M", score: 3 },
+    { label: "5-10M", score: 2 }, { label: "Less than 5M", score: 1 },
+    { label: "No information", score: 0 }
+  ]},
+  { key: "tech_vacancies", label: "Open tech vacancies", max: 2, options: [
+    { label: "YES", score: 2 }, { label: "NO", score: 0 }
+  ]},
+  { key: "defined_request", label: "Defined request", max: 3, options: [
+    { label: "Yes, with details", score: 3 }, { label: "No major details", score: 1 }, { label: "NO", score: 0 }
+  ]},
+  { key: "focus_domain", label: "Focus domain", max: 2, options: [
+    { label: "YES — focus domain", score: 2 },
+    { label: "Focus request from non-focus domain", score: 1 },
+    { label: "NO", score: 0 }
+  ]}
+];
+
+function getGrade(s) {
+  if (s >= 35) return "A"; if (s >= 28) return "B"; if (s >= 20) return "C";
+  if (s >= 11) return "D"; if (s >= 5) return "E"; return "F";
+}
+
+function recalculate() {
+  let total = 0;
+  for (const def of CRITERIA) {
+    const sel = document.getElementById("sel_" + def.key);
+    if (!sel) continue;
+    const score = parseInt(sel.value, 10) || 0;
+    total += score;
+    const badge = document.getElementById("pts_" + def.key);
+    if (badge) { badge.textContent = score + "/" + def.max; badge.className = "pts-badge " + (score > 0 ? "pos" : "zero"); }
+  }
+  const grade = getGrade(total);
+  document.getElementById("grade-letter").textContent = grade;
+  document.getElementById("grade-badge").className = "badge grade-" + grade;
+  document.getElementById("grade-desc").textContent = GRADE_DESCS[grade];
+  document.getElementById("bar-label").textContent = total + " / 38 pts";
+  const fill = document.getElementById("bar-fill");
+  fill.style.width = Math.round((total / 38) * 100) + "%";
+  fill.style.background = GRADE_COLORS[grade];
+}
+
+function buildCriteriaUI(scores) {
+  const list = document.getElementById("criteria-list");
+  list.innerHTML = "";
+  for (const def of CRITERIA) {
+    const entry = scores[def.key] || {};
+    const currentScore = typeof entry.score === "number" ? entry.score : 0;
+    const row = document.createElement("div");
+    row.className = "crit-row";
+    let optionsHtml = "";
+    for (const opt of def.options) {
+      const sel = opt.score === currentScore ? " selected" : "";
+      optionsHtml += `<option value="${opt.score}"${sel}>${opt.label} (${opt.score}pts)</option>`;
+    }
+    row.innerHTML = `<div class="crit-left"><div class="crit-label">${def.label}</div><select class="crit-select" id="sel_${def.key}" onchange="recalculate()">${optionsHtml}</select></div><div class="pts-badge ${currentScore > 0 ? 'pos' : 'zero'}" id="pts_${def.key}">${currentScore}/${def.max}</div>`;
+    list.appendChild(row);
+  }
+}
+
+function buildDetails(d) {
+  const container = document.getElementById("details-rows");
+  container.innerHTML = "";
+  const items = [
+    { label: "Employees", val: d.employees }, { label: "Founded", val: d.founded },
+    { label: "Industries", val: d.industries }, { label: "Revenue", val: d.revenue },
+    { label: "HQ", val: d.hq }, { label: "SIC Code", val: d.sic_code },
+    { label: "NAICS Code", val: d.naics_code },
+    { label: "Website", val: d.website, link: d.website ? "https://" + d.website : null }
+  ];
+  for (const item of items) {
+    if (!item.val) continue;
+    const el = document.createElement("div");
+    el.className = "detail-item";
+    const valHtml = item.link ? `<a href="${item.link}" target="_blank">${esc(item.val)}</a>` : esc(String(item.val));
+    el.innerHTML = `<div class="d-label">${item.label}</div><div class="d-value">${valHtml}</div>`;
+    container.appendChild(el);
+  }
+}
+
+const SYSTEM = `You are a B2B lead scoring analyst for an IT company offering software development, testing, and QA services. Analyze the given company URL and score it as a potential client.
+
+Use web search to research the company. Output ONLY a raw JSON object — no markdown fences, no explanation. Start with { and end with }.
+
+JSON structure:
+{
+  "company_name": "string",
+  "company_meta": "short descriptor e.g. SaaS · New York, USA · ~300 employees",
+  "linkedin_url": "full LinkedIn company page URL or null",
+  "competitor_warning": "string or null — fill only if this is an IT/outsourcing/QA/dev services company",
+  "details": { "employees": "...", "founded": "...", "industries": "...", "revenue": "...", "hq": "...", "sic_code": "...", "naics_code": "...", "website": "..." },
+  "scores": {
+    "company_location": { "value": "matching option label", "score": number },
+    "lead_location": { "value": "matching option label", "score": number },
+    "company_size": { "value": "matching option label", "score": number },
+    "contact_role": { "value": "matching option label", "score": number },
+    "company_type": { "value": "matching option label", "score": number },
+    "revenue": { "value": "matching option label", "score": number },
+    "funding": { "value": "matching option label", "score": number },
+    "tech_vacancies": { "value": "YES or NO", "score": number },
+    "defined_request": { "value": "NO", "score": 0 },
+    "focus_domain": { "value": "matching option label", "score": number }
+  },
+  "total": number,
+  "summary": "2-3 sentence summary"
+}
+
+Scoring rules:
+company_location: "USA, Canada, Israel, UK, DACH, Nordic, France, Switzerland, Australia"=5 | "East Europe, Baltics, Middle East"=3 | "Africa, South East Asia"=1 | "India, others"=0
+lead_location: same regions max 2pts (top=2, mid=1, rest=0). Default same as company.
+company_size: "1-9"=0 | "10-100"=1 | "101-500"=3 | "500+"=4 | "1000+"=5
+contact_role: default "Directors, Head of (tech and non tech)"=3. "Owner, C-level"=4 | "Manager (tech)"=2 | "HR, Recruiters, non-tech"=1
+company_type: "end business mid and big enterprise"=5 | "end business mature startup, middle size"=3 | "end business small or solopreneur"=2 | "IT subcontract big (500+)"=3 | "IT subcontract small (100-500)"=2 | "Vendor selection platform"=1
+revenue: "No data"=0 | "1M-10M"=1 | "10-50M"=2 | "50M-100M"=3 | "100M+"=4 | "500M+"=5
+funding: "No information"=0 | "Less than 5M"=1 | "5-10M"=2 | "10M-20M"=3 | "20M-50M"=4 | "50M+"=5 | "Mature, no need of funding"=6
+tech_vacancies: "YES"=2 | "NO"=0
+defined_request: always "NO"=0
+focus_domain: score 2 if fintech/healthtech/SaaS/HR tech/e-commerce/ERP/CRM | 0 if military/gaming/hardware/streaming | 1 otherwise
+
+Output ONLY raw JSON.`;
+
+async function callAPI(messages) {
+  const apiKey = document.getElementById("api-key-input").value.trim();
+  if (!apiKey) throw new Error("Please enter your Anthropic API key");
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+    body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1500, system: SYSTEM, messages, tools: [{ type: "web_search_20250305", name: "web_search" }] })
+  });
+  if (!r.ok) throw new Error(`API ${r.status}`);
+  return r.json();
+}
+
+async function scoreCompany() {
+  const url = document.getElementById("url-input").value.trim();
+  if (!url) return;
+  const btn = document.getElementById("score-btn");
+  const status = document.getElementById("status");
+  const card = document.getElementById("result-card");
+  const errorBox = document.getElementById("error-box");
+  btn.disabled = true; status.style.display = "block"; card.style.display = "none"; errorBox.style.display = "none";
+  try {
+    const messages = [{ role: "user", content: `Score this company: ${url}` }];
+    let data = await callAPI(messages);
+    let iters = 0;
+    while (data.stop_reason === "tool_use" && iters < 6) {
+      iters++;
+      messages.push({ role: "assistant", content: data.content });
+      const results = data.content.filter(b => b.type === "tool_use").map(b => ({ type: "tool_result", tool_use_id: b.id, content: "Search completed." }));
+      messages.push({ role: "user", content: results });
+      data = await callAPI(messages);
+    }
+    let raw = data.content.filter(b => b.type === "text").map(b => b.text).join("");
+    raw = raw.replace(/```json|```/g, "").trim();
+    const s = raw.indexOf("{"), e = raw.lastIndexOf("}");
+    if (s === -1 || e === -1) throw new Error("No JSON in response");
+    const result = JSON.parse(raw.slice(s, e + 1));
+    document.getElementById("company-name").textContent = result.company_name || url;
+    document.getElementById("company-meta").textContent = result.company_meta || "";
+    const liPill = document.getElementById("li-pill");
+    if (result.linkedin_url) { liPill.href = result.linkedin_url; liPill.style.display = "inline-flex"; } else { liPill.style.display = "none"; }
+    const warn = document.getElementById("warning-box");
+    if (result.competitor_warning) { warn.textContent = "⚠ " + result.competitor_warning; warn.style.display = "block"; } else { warn.style.display = "none"; }
+    buildDetails(result.details || {});
+    buildCriteriaUI(result.scores || {});
+    document.getElementById("summary-text").textContent = result.summary || "";
+    recalculate();
+    card.style.display = "block";
+  } catch (err) {
+    errorBox.textContent = "Error: " + err.message;
+    errorBox.style.display = "block";
+  }
+  status.style.display = "none";
+  btn.disabled = false;
+}
+
+function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+document.getElementById("url-input").addEventListener("keydown", e => { if (e.key === "Enter") scoreCompany(); });
+</script>
+</body>
+</html>
