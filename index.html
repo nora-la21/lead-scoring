@@ -49,6 +49,10 @@
   }
   .url-row button:hover { opacity: 0.85; }
   .url-row button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .lead-row { margin-top: -1.25rem; margin-bottom: 2rem; }
+  .lead-row input { width: 100%; padding: 9px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .lead-row input:focus { border-color: var(--text); }
+  .lead-row input::placeholder { color: var(--text-faint); }
   .status { font-size: 13px; color: var(--text-muted); padding: 0.5rem 0 1rem; display: none; }
   .error-box { background: #fff0f0; border: 1px solid #fcc; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #c00; display: none; margin-bottom: 1.25rem; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; display: none; overflow: hidden; }
@@ -114,6 +118,9 @@
   <div class="url-row">
     <input type="text" id="url-input" placeholder="https://company.com" />
     <button id="score-btn" onclick="scoreCompany()">Score</button>
+  </div>
+  <div class="lead-row">
+    <input type="text" id="lead-input" placeholder="Lead name or LinkedIn URL (optional)" />
   </div>
 
   <div class="status" id="status">🔍 Researching company…</div>
@@ -270,8 +277,7 @@ function buildDetails(d) {
   const items = [
     { label: "Employees", val: d.employees }, { label: "Founded", val: d.founded },
     { label: "Industries", val: d.industries }, { label: "Revenue", val: d.revenue },
-    { label: "HQ", val: d.hq }, { label: "SIC Code", val: d.sic_code },
-    { label: "NAICS Code", val: d.naics_code },
+    { label: "HQ", val: d.hq },
     { label: "Website", val: d.website, link: d.website ? "https://" + d.website : null }
   ];
   for (const item of items) {
@@ -289,9 +295,9 @@ const SYSTEM = `You are a B2B lead scoring analyst for an IT company offering so
 Use web search to research the company thoroughly. Run MULTIPLE searches to gather all data:
 1. Search "[company name] employees revenue founded headquarters" to get basic facts
 2. Search "[company name] site:crunchbase.com OR site:linkedin.com OR site:zoominfo.com" for business data
-3. Search "[company name] NAICS SIC code industry" for industry codes
-4. Search "[company name] funding investment" for funding info
-5. Search "[company name] open jobs hiring" to check tech vacancies
+3. Search "[company name] funding investment" for funding info
+4. Search "[company name] open jobs hiring" to check tech vacancies
+5. If a lead name or LinkedIn URL is provided, search for that person to determine their role and location — use this for contact_role and lead_location scores
 
 For the "details" fields, never leave them as null if information is findable. Use estimates if exact data is unavailable (e.g. "~50 employees", "~$5M revenue"). Only use null as last resort.
 
@@ -355,7 +361,9 @@ async function scoreCompany() {
   const errorBox = document.getElementById("error-box");
   btn.disabled = true; status.style.display = "block"; card.style.display = "none"; errorBox.style.display = "none";
   try {
-    const messages = [{ role: "user", content: `Score this company: ${url}` }];
+    const lead = document.getElementById("lead-input").value.trim();
+    const leadPart = lead ? ` Lead contact: ${lead}` : "";
+    const messages = [{ role: "user", content: `Score this company: ${url}${leadPart}` }];
     let data = await callAPI(messages);
     let iters = 0;
     while (data.stop_reason === "tool_use" && iters < 6) {
