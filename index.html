@@ -286,7 +286,16 @@ function buildDetails(d) {
 
 const SYSTEM = `You are a B2B lead scoring analyst for an IT company offering software development, testing, and QA services. Analyze the given company URL and score it as a potential client.
 
-Use web search to research the company. Output ONLY a raw JSON object — no markdown fences, no explanation. Start with { and end with }.
+Use web search to research the company thoroughly. Run MULTIPLE searches to gather all data:
+1. Search "[company name] employees revenue founded headquarters" to get basic facts
+2. Search "[company name] site:crunchbase.com OR site:linkedin.com OR site:zoominfo.com" for business data
+3. Search "[company name] NAICS SIC code industry" for industry codes
+4. Search "[company name] funding investment" for funding info
+5. Search "[company name] open jobs hiring" to check tech vacancies
+
+For the "details" fields, never leave them as null if information is findable. Use estimates if exact data is unavailable (e.g. "~50 employees", "~$5M revenue"). Only use null as last resort.
+
+Output ONLY a raw JSON object — no markdown fences, no explanation. Start with { and end with }.
 
 JSON structure:
 {
