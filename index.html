@@ -27,26 +27,14 @@
   .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
   .api-key-corner { position: fixed; top: 1.25rem; right: 1.25rem; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; } .api-key-corner label { font-size: 11px; color: var(--text-faint); } .api-key-corner input { width: 220px; padding: 7px 12px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 13px; font-family: 'DM Mono', monospace; background: var(--surface); color: var(--text); outline: none; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .api-row { display: flex; gap: 8px; margin-bottom: 1rem; }
-  .api-row input {
-    flex: 1; padding: 11px 16px; border: 1px solid var(--border-strong); border-radius: 8px;
-    font-size: 14px; font-family: 'DM Mono', monospace; background: var(--surface);
-    color: var(--text); outline: none; transition: border-color 0.15s;
-  }
+  .api-row input { flex: 1; padding: 11px 16px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 14px; font-family: 'DM Mono', monospace; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s; }
   .api-row input:focus { border-color: var(--text); }
   .api-row input::placeholder { color: var(--text-faint); }
   .url-row { display: flex; gap: 8px; margin-bottom: 2rem; }
-  .url-row input {
-    flex: 1; padding: 11px 16px; border: 1px solid var(--border-strong); border-radius: 8px;
-    font-size: 14px; font-family: 'DM Mono', monospace; background: var(--surface);
-    color: var(--text); outline: none; transition: border-color 0.15s;
-  }
+  .url-row input { flex: 1; padding: 11px 16px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 14px; font-family: 'DM Mono', monospace; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s; }
   .url-row input:focus { border-color: var(--text); }
   .url-row input::placeholder { color: var(--text-faint); }
-  .url-row button {
-    padding: 11px 24px; border: none; border-radius: 8px; background: var(--accent);
-    color: #fff; cursor: pointer; font-size: 13px; font-weight: 600;
-    font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em; white-space: nowrap; transition: opacity 0.15s;
-  }
+  .url-row button { padding: 11px 24px; border: none; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em; white-space: nowrap; transition: opacity 0.15s; }
   .url-row button:hover { opacity: 0.85; }
   .url-row button:disabled { opacity: 0.35; cursor: not-allowed; }
   .lead-row { margin-top: -1.25rem; margin-bottom: 2rem; }
@@ -119,6 +107,9 @@
     <input type="text" id="url-input" placeholder="https://company.com" />
     <button id="score-btn" onclick="scoreCompany()">Score</button>
   </div>
+  <div style="margin-top:-1.25rem;margin-bottom:1.5rem;">
+    <a href="#" onclick="showManual();return false;" style="font-size:13px;color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border-strong);">or fill manually →</a>
+  </div>
   <div class="lead-row">
     <input type="text" id="lead-input" placeholder="Lead name or LinkedIn URL (optional)" />
   </div>
@@ -164,6 +155,8 @@
     </div>
   </div>
 </div>
+
+<footer style="background:#1e110a;margin-top:4rem;padding:1.5rem;text-align:center;font-size:13px;color:#7a6a60;">© 2026 Nora Laievska</footer>
 
 <script>
 const GRADE_COLORS = { A:"#2d6e0f", B:"#0d4a82", C:"#7a4a00", D:"#7a2e0a", E:"#7a1010", F:"#555" };
@@ -271,6 +264,38 @@ function buildCriteriaUI(scores) {
   }
 }
 
+function showManual() {
+  document.getElementById("result-card").style.display = "block";
+  document.getElementById("error-box").style.display = "none";
+  document.getElementById("company-name").textContent = "";
+  document.getElementById("company-name").contentEditable = "true";
+  document.getElementById("company-name").style.outline = "none";
+  document.getElementById("company-name").style.borderBottom = "1px dashed var(--border-strong)";
+  document.getElementById("company-meta").textContent = "";
+  document.getElementById("li-pill").style.display = "none";
+  document.getElementById("warning-box").style.display = "none";
+  document.getElementById("summary-text").textContent = "";
+  buildDetailsManual();
+  buildCriteriaUI({});
+  recalculate();
+}
+
+function buildDetailsManual() {
+  const container = document.getElementById("details-rows");
+  container.innerHTML = "";
+  const fields = [
+    { label: "Employees" }, { label: "Founded" },
+    { label: "Industries" }, { label: "Revenue" },
+    { label: "HQ" }, { label: "Website" }
+  ];
+  for (const f of fields) {
+    const el = document.createElement("div");
+    el.className = "detail-item";
+    el.innerHTML = `<div class="d-label">${f.label}</div><input style="width:100%;border:none;border-bottom:1px solid var(--border);background:transparent;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;padding:2px 0;" placeholder="—" />`;
+    container.appendChild(el);
+  }
+}
+
 function buildDetails(d) {
   const container = document.getElementById("details-rows");
   container.innerHTML = "";
@@ -309,7 +334,7 @@ JSON structure:
   "company_meta": "short descriptor e.g. SaaS · New York, USA · ~300 employees",
   "linkedin_url": "full LinkedIn company page URL or null",
   "competitor_warning": "string or null — fill only if this is an IT/outsourcing/QA/dev services company",
-  "details": { "employees": "...", "founded": "...", "industries": "...", "revenue": "...", "hq": "...", "sic_code": "...", "naics_code": "...", "website": "..." },
+  "details": { "employees": "...", "founded": "...", "industries": "...", "revenue": "...", "hq": "...", "website": "..." },
   "scores": {
     "company_location": { "value": "matching option label", "score": number },
     "lead_location": { "value": "matching option label", "score": number },
@@ -400,6 +425,11 @@ async function scoreCompany() {
 function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 document.getElementById("url-input").addEventListener("keydown", e => { if (e.key === "Enter") scoreCompany(); });
+
+const apiKeyInput = document.getElementById("api-key-input");
+const saved = localStorage.getItem("anthropic_api_key");
+if (saved) apiKeyInput.value = saved;
+apiKeyInput.addEventListener("input", () => localStorage.setItem("anthropic_api_key", apiKeyInput.value));
 </script>
 </body>
 </html>
