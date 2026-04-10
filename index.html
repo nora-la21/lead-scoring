@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lead Scorer</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236b1a2a'/><polyline points='3,16 8,16 11,7 17,25 20,16 29,16' stroke='white' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
-
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
   :root {
@@ -23,7 +22,8 @@
     --warning-bg: #fff8e6; --warning-border: #f5d87a; --warning-text: #7a5000;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; padding: 0 0 5rem; color: var(--text); }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; padding: 0; color: var(--text); display: flex; flex-direction: column; }
+  .wrap { flex: 1; }
   .top-bar { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 1px 16px rgba(107,26,42,0.07); }
   .top-bar-inner { max-width: 780px; margin: 0 auto; padding: 0 1.5rem; height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   .logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
@@ -106,7 +106,6 @@
 </style>
 </head>
 <body>
-
 <header class="top-bar">
   <div class="top-bar-inner">
     <div class="logo">
@@ -124,9 +123,7 @@
     </div>
   </div>
 </header>
-
 <div class="wrap">
-
   <div class="form-panel">
     <div class="form-panel-title">Score a lead</div>
     <div class="input-group">
@@ -142,10 +139,8 @@
       <input type="text" id="lead-input" placeholder="Name, title, or LinkedIn URL" />
     </div>
   </div>
-
   <div class="status" id="status">🔍 Researching company…</div>
   <div class="error-box" id="error-box"></div>
-
   <div class="card" id="result-card">
     <div class="card-top">
       <div class="badge" id="grade-badge">
@@ -184,9 +179,7 @@
     </div>
   </div>
 </div>
-
-<footer style="background:#3a0d16;margin-top:5rem;padding:1.75rem;text-align:center;font-size:13px;color:#a07080;letter-spacing:0.02em;">© 2026 Nora Laievska</footer>
-
+<footer style="background:#3a0d16;padding:1.75rem;text-align:center;font-size:13px;color:#a07080;letter-spacing:0.02em;">© 2026 Nora Laievska</footer>
 <script>
 const GRADE_COLORS = { A:"#2d6e0f", B:"#0d4a82", C:"#7a4a00", D:"#7a2e0a", E:"#7a1010", F:"#555" };
 const GRADE_DESCS = {
@@ -249,12 +242,10 @@ const CRITERIA = [
     { label: "NO", score: 0 }
   ]}
 ];
-
 function getGrade(s) {
   if (s >= 35) return "A"; if (s >= 28) return "B"; if (s >= 20) return "C";
   if (s >= 11) return "D"; if (s >= 5) return "E"; return "F";
 }
-
 function recalculate() {
   let total = 0;
   for (const def of CRITERIA) {
@@ -274,7 +265,6 @@ function recalculate() {
   fill.style.width = Math.round((total / 38) * 100) + "%";
   fill.style.background = GRADE_COLORS[grade];
 }
-
 function buildCriteriaUI(scores) {
   const list = document.getElementById("criteria-list");
   list.innerHTML = "";
@@ -292,7 +282,6 @@ function buildCriteriaUI(scores) {
     list.appendChild(row);
   }
 }
-
 function showManual() {
   document.getElementById("result-card").style.display = "block";
   document.getElementById("error-box").style.display = "none";
@@ -308,7 +297,6 @@ function showManual() {
   buildCriteriaUI({});
   recalculate();
 }
-
 function buildDetailsManual() {
   const container = document.getElementById("details-rows");
   container.innerHTML = "";
@@ -324,7 +312,6 @@ function buildDetailsManual() {
     container.appendChild(el);
   }
 }
-
 function buildDetails(d) {
   const container = document.getElementById("details-rows");
   container.innerHTML = "";
@@ -343,20 +330,15 @@ function buildDetails(d) {
     container.appendChild(el);
   }
 }
-
 const SYSTEM = `You are a B2B lead scoring analyst for an IT company offering software development, testing, and QA services. Analyze the given company URL and score it as a potential client.
-
 Use web search to research the company thoroughly. Run MULTIPLE searches to gather all data:
 1. Search "[company name] employees revenue founded headquarters" to get basic facts
 2. Search "[company name] site:crunchbase.com OR site:linkedin.com OR site:zoominfo.com" for business data
 3. Search "[company name] funding investment" for funding info
 4. Search "[company name] open jobs hiring" to check tech vacancies
 5. If a lead name or LinkedIn URL is provided, search for that person to determine their role and location — use this for contact_role and lead_location scores
-
 For the "details" fields, never leave them as null if information is findable. Use estimates if exact data is unavailable (e.g. "~50 employees", "~$5M revenue"). Only use null as last resort.
-
 Output ONLY a raw JSON object — no markdown fences, no explanation. Start with { and end with }.
-
 JSON structure:
 {
   "company_name": "string",
@@ -379,7 +361,6 @@ JSON structure:
   "total": number,
   "summary": "2-3 sentence summary"
 }
-
 Scoring rules:
 company_location: "USA, Canada, Israel, UK, DACH, Nordic, France, Switzerland, Australia"=5 | "East Europe, Baltics, Middle East"=3 | "Africa, South East Asia"=1 | "India, others"=0
 lead_location: same regions max 2pts (top=2, mid=1, rest=0). Default same as company.
@@ -391,9 +372,7 @@ funding: "No information"=0 | "Less than 5M"=1 | "5-10M"=2 | "10M-20M"=3 | "20M-
 tech_vacancies: "YES"=2 | "NO"=0
 defined_request: always "NO"=0
 focus_domain: score 2 if fintech/healthtech/SaaS/HR tech/e-commerce/ERP/CRM | 0 if military/gaming/hardware/streaming | 1 otherwise
-
 Output ONLY raw JSON.`;
-
 async function callAPI(messages) {
   const apiKey = document.getElementById("api-key-input").value.trim();
   if (!apiKey) throw new Error("Please enter your Anthropic API key");
@@ -405,7 +384,6 @@ async function callAPI(messages) {
   if (!r.ok) throw new Error(`API ${r.status}`);
   return r.json();
 }
-
 async function scoreCompany() {
   const url = document.getElementById("url-input").value.trim();
   if (!url) return;
@@ -450,11 +428,8 @@ async function scoreCompany() {
   status.style.display = "none";
   btn.disabled = false;
 }
-
 function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
 document.getElementById("url-input").addEventListener("keydown", e => { if (e.key === "Enter") scoreCompany(); });
-
 const apiKeyInput = document.getElementById("api-key-input");
 const saved = localStorage.getItem("anthropic_api_key");
 if (saved) apiKeyInput.value = saved;
