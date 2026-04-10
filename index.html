@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+Show less
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lead Scorer</title>
@@ -21,35 +22,44 @@
     --warning-bg: #fff8e6; --warning-border: #f5d87a; --warning-text: #7a5000;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; padding: 3rem 1.5rem 5rem; color: var(--text); }
-  .wrap { max-width: 780px; margin: 0 auto; }
-  .header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; color: var(--accent); }
-  .header p { font-size: 13px; color: var(--text-muted); margin-top: 6px; line-height: 1.6; }
-  .api-key-corner { position: fixed; top: 1rem; right: 1.25rem; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-  .api-key-corner label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
-  .api-key-corner input { width: 210px; padding: 6px 11px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 12px; font-family: 'DM Mono', monospace; background: var(--surface); color: var(--text); outline: none; box-shadow: 0 1px 6px rgba(107,26,42,0.07); transition: border-color 0.15s; }
-  .api-key-corner input:focus { border-color: var(--accent); }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; padding: 0 0 5rem; color: var(--text); }
+  /* ── Top navbar ── */
+  .top-bar { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 1px 16px rgba(107,26,42,0.07); }
+  .top-bar-inner { max-width: 780px; margin: 0 auto; padding: 0 1.5rem; height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-mark svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .logo-text { display: flex; flex-direction: column; gap: 1px; }
+  .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -0.025em; color: var(--text); line-height: 1; }
+  .logo-tag { font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.01em; line-height: 1; }
+  .header-key { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .header-key label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-faint); }
+  .header-key input { width: 200px; padding: 6px 11px; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 12px; font-family: 'DM Mono', monospace; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  .header-key input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(107,26,42,0.08); }
+  /* ── Main content ── */
+  .wrap { max-width: 780px; margin: 0 auto; padding: 2.25rem 1.5rem; }
   .input-group { margin-bottom: 1rem; }
   .input-group label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
   .url-row { display: flex; gap: 10px; }
-  .url-row input { flex: 1; padding: 12px 16px; border: 1.5px solid var(--border-strong); border-radius: 10px; font-size: 14px; font-family: 'DM Mono', monospace; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-  .url-row input:focus { border-color: var(--accent); }
+  .url-row input { flex: 1; padding: 13px 16px; border: 1.5px solid var(--border-strong); border-radius: 11px; font-size: 14px; font-family: 'DM Mono', monospace; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .url-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(107,26,42,0.08); }
   .url-row input::placeholder { color: var(--text-faint); }
-  .url-row button { padding: 12px 28px; border: none; border-radius: 10px; background: var(--accent); color: #fff; cursor: pointer; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; letter-spacing: 0.01em; white-space: nowrap; transition: background 0.15s, transform 0.1s; box-shadow: 0 2px 8px rgba(107,26,42,0.25); }
-  .url-row button:hover { background: var(--accent-hover); }
-  .url-row button:active { transform: scale(0.98); }
-  .url-row button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .url-row button { padding: 13px 26px; border: none; border-radius: 11px; background: linear-gradient(135deg, #7d1f31 0%, #6b1a2a 60%, #55131f 100%); color: #fff; cursor: pointer; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; letter-spacing: 0.02em; white-space: nowrap; transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s; box-shadow: 0 3px 12px rgba(107,26,42,0.35); }
+  .url-row button:hover { opacity: 0.92; box-shadow: 0 4px 16px rgba(107,26,42,0.4); }
+  .url-row button:active { transform: scale(0.97); }
+  .url-row button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
   .manual-link { display: inline-block; margin-top: 8px; font-size: 12px; color: var(--text-muted); text-decoration: none; border-bottom: 1px dashed var(--border-strong); transition: color 0.15s; }
   .manual-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
   .lead-row { margin-top: 0; }
   .lead-row input { width: 100%; padding: 11px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
   .lead-row input:focus { border-color: var(--accent); }
   .lead-row input::placeholder { color: var(--text-faint); }
+  .form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(107,26,42,0.05); }
+  .form-panel-title { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); opacity: 0.7; margin-bottom: 1.25rem; }
   .status { font-size: 13px; color: var(--accent); padding: 0.75rem 0 1rem; display: none; font-weight: 500; }
   .error-box { background: #fff0f2; border: 1px solid #f5c0c8; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--accent); display: none; margin-bottom: 1.25rem; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; display: none; overflow: hidden; box-shadow: 0 4px 20px rgba(107,26,42,0.08); }
-  .card-top { display: flex; align-items: flex-start; gap: 20px; padding: 1.75rem; border-bottom: 1px solid var(--border); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; display: none; overflow: hidden; box-shadow: 0 8px 32px rgba(107,26,42,0.10), 0 1px 4px rgba(107,26,42,0.06); }
+  .card-top { display: flex; align-items: flex-start; gap: 20px; padding: 1.75rem; border-bottom: 1px solid var(--border); border-left: 4px solid var(--accent); }
   .badge { width: 90px; height: 90px; border-radius: 16px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: background 0.3s; }
   .badge-letter { font-size: 48px; font-weight: 700; line-height: 1; transition: color 0.3s; }
   .badge-sub { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 3px; transition: color 0.3s; }
@@ -97,34 +107,41 @@
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <h1>Lead Scorer</h1>
-    <p>Paste a company URL — AI researches it and scores it as a potential client. You can edit every field after scoring.</p>
-  </div>
-
-  <div class="api-key-corner">
-    <label>Anthropic API Key</label>
-    <input type="password" id="api-key-input" placeholder="sk-ant-..." />
-  </div>
-
-  <div class="input-group">
-    <label>Company website</label>
-    <div class="url-row">
-      <input type="text" id="url-input" placeholder="https://company.com" />
-      <button id="score-btn" onclick="scoreCompany()">Score →</button>
+<header class="top-bar">
+  <div class="top-bar-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-name">Lead Scorer</span>
+        <span class="logo-tag">AI-powered B2B lead qualification</span>
+      </div>
     </div>
-    <a class="manual-link" href="#" onclick="showManual();return false;">or fill in manually</a>
+    <div class="header-key">
+      <label>Anthropic API Key</label>
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+    </div>
   </div>
-
-  <div class="input-group lead-row">
-    <label>Lead contact <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-faint)">(optional)</span></label>
-    <input type="text" id="lead-input" placeholder="Name, title, or LinkedIn URL" />
+</header>
+<div class="wrap">
+  <div class="form-panel">
+    <div class="form-panel-title">Score a lead</div>
+    <div class="input-group">
+      <label>Company website</label>
+      <div class="url-row">
+        <input type="text" id="url-input" placeholder="https://company.com" />
+        <button id="score-btn" onclick="scoreCompany()">Score →</button>
+      </div>
+      <a class="manual-link" href="#" onclick="showManual();return false;">or fill in manually</a>
+    </div>
+    <div class="input-group lead-row" style="margin-bottom:0;">
+      <label>Lead contact <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-faint)">(optional)</span></label>
+      <input type="text" id="lead-input" placeholder="Name, title, or LinkedIn URL" />
+    </div>
   </div>
-
   <div class="status" id="status">🔍 Researching company…</div>
   <div class="error-box" id="error-box"></div>
-
   <div class="card" id="result-card">
     <div class="card-top">
       <div class="badge" id="grade-badge">
@@ -163,9 +180,7 @@
     </div>
   </div>
 </div>
-
 <footer style="background:#3a0d16;margin-top:5rem;padding:1.75rem;text-align:center;font-size:13px;color:#a07080;letter-spacing:0.02em;">© 2026 Nora Laievska</footer>
-
 <script>
 const GRADE_COLORS = { A:"#2d6e0f", B:"#0d4a82", C:"#7a4a00", D:"#7a2e0a", E:"#7a1010", F:"#555" };
 const GRADE_DESCS = {
@@ -228,12 +243,10 @@ const CRITERIA = [
     { label: "NO", score: 0 }
   ]}
 ];
-
 function getGrade(s) {
   if (s >= 35) return "A"; if (s >= 28) return "B"; if (s >= 20) return "C";
   if (s >= 11) return "D"; if (s >= 5) return "E"; return "F";
 }
-
 function recalculate() {
   let total = 0;
   for (const def of CRITERIA) {
@@ -253,7 +266,6 @@ function recalculate() {
   fill.style.width = Math.round((total / 38) * 100) + "%";
   fill.style.background = GRADE_COLORS[grade];
 }
-
 function buildCriteriaUI(scores) {
   const list = document.getElementById("criteria-list");
   list.innerHTML = "";
@@ -271,7 +283,6 @@ function buildCriteriaUI(scores) {
     list.appendChild(row);
   }
 }
-
 function showManual() {
   document.getElementById("result-card").style.display = "block";
   document.getElementById("error-box").style.display = "none";
@@ -287,7 +298,6 @@ function showManual() {
   buildCriteriaUI({});
   recalculate();
 }
-
 function buildDetailsManual() {
   const container = document.getElementById("details-rows");
   container.innerHTML = "";
@@ -303,7 +313,6 @@ function buildDetailsManual() {
     container.appendChild(el);
   }
 }
-
 function buildDetails(d) {
   const container = document.getElementById("details-rows");
   container.innerHTML = "";
@@ -322,20 +331,15 @@ function buildDetails(d) {
     container.appendChild(el);
   }
 }
-
 const SYSTEM = `You are a B2B lead scoring analyst for an IT company offering software development, testing, and QA services. Analyze the given company URL and score it as a potential client.
-
 Use web search to research the company thoroughly. Run MULTIPLE searches to gather all data:
 1. Search "[company name] employees revenue founded headquarters" to get basic facts
 2. Search "[company name] site:crunchbase.com OR site:linkedin.com OR site:zoominfo.com" for business data
 3. Search "[company name] funding investment" for funding info
 4. Search "[company name] open jobs hiring" to check tech vacancies
 5. If a lead name or LinkedIn URL is provided, search for that person to determine their role and location — use this for contact_role and lead_location scores
-
 For the "details" fields, never leave them as null if information is findable. Use estimates if exact data is unavailable (e.g. "~50 employees", "~$5M revenue"). Only use null as last resort.
-
 Output ONLY a raw JSON object — no markdown fences, no explanation. Start with { and end with }.
-
 JSON structure:
 {
   "company_name": "string",
@@ -358,7 +362,6 @@ JSON structure:
   "total": number,
   "summary": "2-3 sentence summary"
 }
-
 Scoring rules:
 company_location: "USA, Canada, Israel, UK, DACH, Nordic, France, Switzerland, Australia"=5 | "East Europe, Baltics, Middle East"=3 | "Africa, South East Asia"=1 | "India, others"=0
 lead_location: same regions max 2pts (top=2, mid=1, rest=0). Default same as company.
@@ -370,9 +373,7 @@ funding: "No information"=0 | "Less than 5M"=1 | "5-10M"=2 | "10M-20M"=3 | "20M-
 tech_vacancies: "YES"=2 | "NO"=0
 defined_request: always "NO"=0
 focus_domain: score 2 if fintech/healthtech/SaaS/HR tech/e-commerce/ERP/CRM | 0 if military/gaming/hardware/streaming | 1 otherwise
-
 Output ONLY raw JSON.`;
-
 async function callAPI(messages) {
   const apiKey = document.getElementById("api-key-input").value.trim();
   if (!apiKey) throw new Error("Please enter your Anthropic API key");
@@ -384,7 +385,6 @@ async function callAPI(messages) {
   if (!r.ok) throw new Error(`API ${r.status}`);
   return r.json();
 }
-
 async function scoreCompany() {
   const url = document.getElementById("url-input").value.trim();
   if (!url) return;
@@ -429,15 +429,11 @@ async function scoreCompany() {
   status.style.display = "none";
   btn.disabled = false;
 }
-
 function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
 document.getElementById("url-input").addEventListener("keydown", e => { if (e.key === "Enter") scoreCompany(); });
-
 const apiKeyInput = document.getElementById("api-key-input");
 const saved = localStorage.getItem("anthropic_api_key");
 if (saved) apiKeyInput.value = saved;
 apiKeyInput.addEventListener("input", () => localStorage.setItem("anthropic_api_key", apiKeyInput.value));
 </script>
 </body>
-</html>
